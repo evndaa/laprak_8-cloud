@@ -1,0 +1,23 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Jalankan Build
+        run: |
+          echo "Disini Build Docker buatan Evinda"
+          echo "Build successfully!"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Jalankan Deploy
+        run: |
+          echo "Disini Deploy Docker punya Evinda"
+          echo "Deploy successfully!"
