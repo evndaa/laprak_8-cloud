@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: CI/CD Pipeline Docker Hub
 
 on:
   push:
@@ -7,40 +7,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: # Izin untuk menulis ke GitHub Packages
-      contents: read
-      packages: write
-
     steps:
       - name: Checkout Kode
         uses: actions/checkout@v4
 
-      - name: Login ke GitHub Container Registry
+      - name: Login ke Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build dan Push Image
         run: |
-          # Mengubah nama repo jadi huruf kecil semua agar tidak error
-          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/laprak_8_cloud:latest
-          IMAGE_NAME=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')
-          
-          echo "Sedang memproses Build Docker..."
+          # Mengubah username jadi kecil biar gak error
+          USER_NAME=$(echo "${{ secrets.DOCKERHUB_USERNAME }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME=$USER_NAME/laprak_8_cloud:latest
           docker build -t $IMAGE_NAME .
-          
-          echo "Sedang memproses Push ke GitHub Registry..."
           docker push $IMAGE_NAME
-          
-          echo "Build and Push successfully!"
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Simulasi Deploy
-        run: |
-          echo "Disini Deploy Docker punya Evinda"
-          echo "Deploy successfully!"
